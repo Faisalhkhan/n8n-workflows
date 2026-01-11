@@ -1,0 +1,614 @@
+{
+  "name": "Automated Telegram News Channel",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "value": 7,
+              "unit": "minutes"
+            }
+          ]
+        },
+        "feedUrl": "https://news.google.com/rss/"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -288
+      ],
+      "id": "de357bbf-16cf-4fe7-9e7e-cbe3e1d07633",
+      "name": "RSS Feed Trigger"
+    },
+    {
+      "parameters": {
+        "model": "mistral:7b",
+        "options": {
+          "temperature": 0,
+          "lowVram": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        176
+      ],
+      "id": "e90c4985-e876-4496-a301-0673e6eb8c89",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "53B2lJZ5EhhqEtZP",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": {
+          "__rl": true,
+          "value": "2EfM1WZBIH1FeOLr",
+          "mode": "list",
+          "cachedResultName": "News",
+          "cachedResultUrl": "/projects/a0et4OyAuaIMiEry/datatables/2EfM1WZBIH1FeOLr"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "GUID",
+              "keyValue": "={{ $json.guid }}"
+            },
+            {
+              "keyName": "Link",
+              "keyValue": "={{ $json.link }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        -288
+      ],
+      "id": "8f6da3dc-e008-41d4-9621-f0af1c10b7ce",
+      "name": "If row does not exist"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 4,
+        "options": {
+          "includeUnpaired": true
+        }
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        576,
+        -192
+      ],
+      "id": "9af1103a-1b02-4ff1-a2c6-73eb0d0de762",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "336ed0fe-c6f7-4d95-8013-c0f544035d4a",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "ca7e2f18-2167-4eb1-89f5-efe1fce697fa",
+              "name": "guid",
+              "value": "={{ $json.guid }}",
+              "type": "string"
+            },
+            {
+              "id": "bf20c5a8-21d3-4257-8e04-734be76f6563",
+              "name": "content",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            },
+            {
+              "id": "f8b407da-e9f4-4907-bc74-d3cca1cc4bee",
+              "name": "category",
+              "value": "={{ $json.category }}",
+              "type": "string"
+            },
+            {
+              "id": "687045af-f09b-44d7-9c95-55a3ab2ff2a2",
+              "name": "Title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        -160
+      ],
+      "id": "a330fc4a-77b0-4ee2-b0f6-96126a520efd",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "2EfM1WZBIH1FeOLr",
+          "mode": "list",
+          "cachedResultName": "News",
+          "cachedResultUrl": "/projects/a0et4OyAuaIMiEry/datatables/2EfM1WZBIH1FeOLr"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "GUID": "={{ $json.guid }}",
+            "Link": "={{ $json.link }}",
+            "Content": "={{ $json.content }}",
+            "Category": "={{ $json.category }}",
+            "Title": "={{ $json.Title }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "GUID",
+              "displayName": "GUID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Link",
+              "displayName": "Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Content",
+              "displayName": "Content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1024,
+        -160
+      ],
+      "id": "acd9ea64-fd6a-454e-9375-f36828143011",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "model": "=mistral:7b",
+        "options": {
+          "temperature": 0,
+          "lowVram": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        80,
+        -176
+      ],
+      "id": "0cf9703f-1f2d-44ba-9c16-03436bad5018",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "53B2lJZ5EhhqEtZP",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b620ddc2-663e-4edb-bbd5-a2150babcb03",
+              "name": "category",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        -288
+      ],
+      "id": "70d3ec26-571e-443c-ba64-4a2b8e739061",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "419a5cef-25a3-4e70-aad5-8466e89475d6",
+              "name": "guid",
+              "value": "={{ $json.guid }}",
+              "type": "string"
+            },
+            {
+              "id": "211cca9d-7f07-4aa9-8be7-92b5c551ed82",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        352,
+        -544
+      ],
+      "id": "38e8a6aa-3d52-4502-9328-7a1e7aa59d95",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=summarize this [ {{ $json.contentSnippet }} ] into short, clear and consice news bullets, Remove points that are off-topic compared to the majority theme in the list.\nUse numbers for bullet points.\nDon't add assumptions.\nDon't include news source or publishers name\nDon't include any other detail or explaination.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -352,
+        -48
+      ],
+      "id": "f306ed1e-3b96-41ae-8171-4006b43077e3",
+      "name": "extract news summary"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a News classifier.\n\nClassify this [{{ $json.output }}] into ONE single category from this list [Politics, Business, Technology, Geopolitics, Sports, Entertainment, Science, Health, Other]\n\nReturn ONLY ONE single category. don't add explanation or assumptions.\n\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        -400
+      ],
+      "id": "bb7abbd4-7f0f-493e-b83d-38e9525cf291",
+      "name": "Categorize news"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "308092c6-554f-46fb-b0d3-6da2460e0925",
+              "name": "title",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        80
+      ],
+      "id": "4e7e7b7c-5c5a-4d08-a4fc-2915013d789f",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot[YOUR_BOT_TOKEN]/sendMessage",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "YOUR CHANNEL ID example-@news_bullets"
+            },
+            {
+              "name": "parse_mode",
+              "value": "HTML"
+            },
+            {
+              "name": "text",
+              "value": "=<b>📰 {{ $json.Title }}\n\n</b><b>Category:{{ $json.Category }} \n\n</b><b>Key Points:</b> \n\n{{ $json.Content }}\n\n<a href=\"{{ $json.Link }}\">Read more here</a>\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1248,
+        -160
+      ],
+      "id": "4bbd8cf6-8eb2-493c-8e1e-eb0d52f89fc2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "model": "mistral:7b",
+        "options": {
+          "temperature": 0,
+          "lowVram": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -80
+      ],
+      "id": "bf1531b6-040b-4152-8a8f-ff296a4bea71",
+      "name": "Ollama Chat Model2",
+      "credentials": {
+        "ollamaApi": {
+          "id": "53B2lJZ5EhhqEtZP",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=remove news publisher and news source from the title and give clean and consice title only [ {{ $json.title }}]",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -352,
+        -208
+      ],
+      "id": "69041861-d1e8-4dce-a58c-99a3b8e7de2c",
+      "name": "Title"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "If row does not exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extract news summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If row does not exist": {
+      "main": [
+        [
+          {
+            "node": "extract news summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Title",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert row": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Categorize news",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract news summary": {
+      "main": [
+        [
+          {
+            "node": "Categorize news",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Categorize news": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Title",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Title": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a0e54529-f6db-4da7-949e-2f326c119b67",
+  "meta": {
+    "instanceId": "e86236860f2f3c9692a3c0642248f88d7e3a6853fb4d8db0c5c6547e162302ed"
+  },
+  "id": "iEyRk-j4ZX7IQnHYGDD6L",
+  "tags": []
+}
