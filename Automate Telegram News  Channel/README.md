@@ -70,21 +70,7 @@ Each message sent to Telegram includes
 Bold title
 Category label
 Numbered key points
-Read more link to the original article
-
-## Categories Used
-
-Politics
-Business
-Technology
-Geopolitics
-Sports
-Entertainment
-Science
-Health
-Other
-
-Only one category is assigned per news item.
+Read more link to the original article. 
 
 ## Notes and Limitations
 
